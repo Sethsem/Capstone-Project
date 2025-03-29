@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { fetchExchangeRates } from "./api/currencyApi";
+// src/App.jsx
+import React from 'react';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import CurrencyConverter from './components/CurrencyConverter';
 
-function App() {
-  const [rates, setRates] = useState(null);
-
-  useEffect(() => {
-    fetchExchangeRates("USD").then((data) => setRates(data));
-  }, []);
-
+const App = () => {
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold">Currency Exchange Rates</h1>
-      {rates ? <pre>{JSON.stringify(rates, null, 2)}</pre> : <p>Loading...</p>}
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <CurrencyConverter />
+      </main>
+      <Footer />
     </div>
   );
-}
+};
 
 export default App;
