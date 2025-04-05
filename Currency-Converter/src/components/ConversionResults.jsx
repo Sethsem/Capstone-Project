@@ -1,12 +1,9 @@
 import React from 'react';
 
-const ConversionResults = ({ result }) => {
-  return (
-    <div className="mt-4 p-3 bg-green-100 rounded">
-      <h3 className="text-lg font-semibold">Converted Amount:</h3>
-      <p className="text-xl">{result}</p>
-    </div>
-  );
-};
+const ConversionResults = ({ result }) => (
+  <div className="mt-4 text-xl text-gray-800">
+    {result ? `Converted Amount: ${result}` : 'Enter amount to convert'}
+  </div>
+);
 
 export default ConversionResults;

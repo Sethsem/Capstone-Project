@@ -1,77 +1,65 @@
-import React, { useState } from 'react';
+import React from 'react';
 import CurrencySelector from './CurrencySelector';
-import SwapButton from './SwapButton';
-import ConversionResults from './ConversionResults';
-import HistoricalChart from './HistoricalChart';
-import axios from 'axios';
+import useCurrencyStore from '../components/useCurrencyStore';
 
 const CurrencyConverter = () => {
-  const [baseCurrency, setBaseCurrency] = useState('USD');
-  const [targetCurrency, setTargetCurrency] = useState('EUR');
-  const [amount, setAmount] = useState(1);
-  const [result, setResult] = useState('');
-  const [historicalData, setHistoricalData] = useState([]);
+  const { 
+    selectedFromCurrency, 
+    selectedToCurrency, 
+    setSelectedFromCurrency, 
+    setSelectedToCurrency, 
+    amount, 
+    setAmount, 
+    exchangeRate, 
+    fetchExchangeRate 
+  } = useCurrencyStore();
 
+  // Swap button logic
   const handleSwap = () => {
-    setBaseCurrency(targetCurrency);
-    setTargetCurrency(baseCurrency);
+    setSelectedFromCurrency(selectedToCurrency);
+    setSelectedToCurrency(selectedFromCurrency);
   };
 
-  const convertCurrency = async () => {
-    try {
-      // Fetch conversion rate from an API
-      const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
-      const rate = response.data.rates[targetCurrency];
-      setResult((amount * rate).toFixed(2));
-
-     
-      const historicalResponse = [
-        { date: '2025-03-25', rate: rate * 0.98 },
-        { date: '2025-03-26', rate: rate * 0.99 },
-        { date: '2025-03-27', rate: rate },
-        { date: '2025-03-28', rate: rate * 1.01 },
-        { date: '2025-03-29', rate: rate * 1.02 },
-      ];
-      setHistoricalData(historicalResponse);
-    } catch (error) {
-      console.error('Error fetching exchange rate:', error);
-      setResult('Error');
-    }
+  // Handle conversion
+  const handleConvert = async () => {
+    await fetchExchangeRate(selectedFromCurrency, selectedToCurrency);
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow-lg mt-6">
-      <div className="flex gap-2 mb-4 justify-center">
-        <CurrencySelector
-          value={baseCurrency}
-          onChange={setBaseCurrency}
-          currencies={['USD', 'EUR', 'GBP', 'JPY']}
+    <div className="currency-converter p-4 bg-grey-500 rounded shadow w-[50%] m-[auto] pb-20">
+      <h2 className="text-xl mb-4">Currency Converter</h2>
+      <div className="flex gap-2 mb-4 ">
+        <CurrencySelector 
+          selectedCurrency={selectedFromCurrency}
+          onChange={setSelectedFromCurrency}
         />
-        <SwapButton onClick={handleSwap} />
+        <button 
+          onClick={handleSwap} 
+          className="swap-button p-2 bg-blue-500 text-white rounded">
+          Swap
+        </button>
         <CurrencySelector
-          value={targetCurrency}
-          onChange={setTargetCurrency}
-          currencies={['USD', 'EUR', 'GBP', 'JPY']}
+          selectedCurrency={selectedToCurrency}
+          onChange={setSelectedToCurrency}
         />
       </div>
-
       <input
         type="number"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        className="w-full p-2 border rounded mb-4"
+        className="p-2 border rounded w-[50%] bg-[#334D66]"
         placeholder="Enter amount"
       />
-
-      <button
-        onClick={convertCurrency}
-        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-      >
+      <button 
+        onClick={handleConvert} 
+        className="convert-button mt-2 p-2 bg-[#243647] text-white rounded w-[50%] flex justify-center items-center">
         Convert
       </button>
-
-      <ConversionResults result={result} />
-      {historicalData.length > 0 && <HistoricalChart data={historicalData} />}
+      {exchangeRate && (
+        <p className="mt-4">
+          {amount} {selectedFromCurrency} = {(amount * exchangeRate).toFixed(2)} {selectedToCurrency}
+        </p>
+      )}
     </div>
   );
 };

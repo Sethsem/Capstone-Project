@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import useCurrencyStore from '../components/useCurrencyStore';
 
-const CurrencySelector = ({ value, onChange, currencies }) => {
+const CurrencySelector = ({ selectedCurrency, onChange }) => {
+  const { currencies, fetchCurrencies } = useCurrencyStore();
+
+  useEffect(() => {
+    fetchCurrencies();
+  }, [fetchCurrencies]);
+
   return (
-    <select
-      className="p-2 border rounded"
-      value={value}
+    <select 
+      value={selectedCurrency}
       onChange={(e) => onChange(e.target.value)}
+      className="p-2 border rounded bg-[#243647]"
     >
       {currencies.map((currency) => (
         <option key={currency} value={currency}>

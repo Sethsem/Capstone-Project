@@ -1,16 +1,39 @@
 import { create } from 'zustand';
+import axios from 'axios';
 
 const useCurrencyStore = create((set) => ({
-  baseCurrency: 'USD',
-  targetCurrency: 'EUR',
+  currencies: [],
+  selectedFromCurrency: 'USD',
+  selectedToCurrency: 'EUR',
   amount: 1,
-  result: '',
-  historicalData: [],
-  setBaseCurrency: (currency) => set({ baseCurrency: currency }),
-  setTargetCurrency: (currency) => set({ targetCurrency: currency }),
+  exchangeRate: null,
+
+
+  fetchCurrencies: async () => {
+    try {
+      const response = await axios.get('https://open.er-api.com/v6/latest/USD');
+      console.log(response?.data)
+      const currencies = Object.keys(response.data.rates);
+      set({ currencies });
+    } catch (error) {
+      console.error('Failed to fetch currencies:', error);
+    }
+  },
+
+  fetchExchangeRate: async (from, to) => {
+    try {
+      const response = await axios.get(`https://open.er-api.com/v6/latest/${from}`);
+      const rate = response.data.rates[to];
+      set({ exchangeRate: rate });
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  },
+
+  setSelectedFromCurrency: (currency) => set({ selectedFromCurrency: currency }),
+  setSelectedToCurrency: (currency) => set({ selectedToCurrency: currency }),
   setAmount: (value) => set({ amount: value }),
-  setResult: (value) => set({ result: value }),
-  setHistoricalData: (data) => set({ historicalData: data }),
+  setExchangeRate: (rate) => set({ exchangeRate: rate }),
 }));
 
 export default useCurrencyStore;

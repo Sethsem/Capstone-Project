@@ -1,15 +1,21 @@
-// src/App.jsx
 import React from 'react';
 import Header from './components/Header';
-import Footer from './components/Footer';
+import HeroSection from './components/HeroSection';
 import CurrencyConverter from './components/CurrencyConverter';
+import ExchangeRateGraph from './components/ExchangeRateGraph';
+import RecentConversions from './components/RecentConversions';
+import Footer from './components/Footer';
+import HistoricalExchangeGraph from './components/HistoricalExchangeGraph';
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="bg-black min-h-screen text-white">
       <Header />
-      <main className="flex-1">
+      <HeroSection />
+      <main className="p-8">
         <CurrencyConverter />
+        <HistoricalExchangeGraph />
+        <RecentConversions />
       </main>
       <Footer />
     </div>
